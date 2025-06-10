@@ -1,4 +1,5 @@
-![PasteBin Deluxe - Hero Screenshot](./screenshot.png)
+![image](https://github.com/user-attachments/assets/10bbdf0b-3580-4403-819d-9272b46a5e87)
+
 
 <div align="center">
 
