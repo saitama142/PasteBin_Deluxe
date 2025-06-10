@@ -43,7 +43,7 @@ app.use(cors({
 // Rate Limiting
 const createPasteLimit = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.MAX_PASTES_PER_IP) || 10, // limit each IP to 10 requests per windowMs
+    max: parseInt(process.env.MAX_PASTES_PER_IP) || 10, // production rate limit
     message: {
         error: 'Too many pastes created from this IP, please try again later.'
     },
@@ -53,7 +53,7 @@ const createPasteLimit = rateLimit({
 
 const generalLimit = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 100, // limit each IP to 100 requests per minute
+    max: 100, // production rate limit
     message: {
         error: 'Too many requests from this IP, please try again later.'
     }
@@ -129,8 +129,7 @@ const validatePaste = [
     body('content')
         .isLength({ min: 1, max: parseInt(process.env.MAX_PASTE_SIZE) || 1048576 })
         .withMessage('Content must be between 1 and 1MB')
-        .trim()
-        .escape(),
+        .trim(),
     body('language')
         .optional()
         .custom(value => {
@@ -140,12 +139,23 @@ const validatePaste = [
             return true;
         }),
     body('password')
-        .optional()
-        .isLength({ min: 1, max: 128 })
-        .withMessage('Password must be between 1 and 128 characters'),
+        .optional({ nullable: true })
+        .custom(value => {
+            if (value !== null && value !== undefined) {
+                if (typeof value !== 'string' || value.length < 1 || value.length > 128) {
+                    throw new Error('Password must be between 1 and 128 characters');
+                }
+            }
+            return true;
+        }),
     body('expiration')
-        .optional()
-        .isIn(['1hour', '1day', '1week'])
+        .optional({ nullable: true })
+        .custom(value => {
+            if (value !== null && !['1hour', '1day', '1week'].includes(value)) {
+                throw new Error('Invalid expiration time');
+            }
+            return true;
+        })
         .withMessage('Invalid expiration time')
 ];
 
@@ -162,6 +172,8 @@ const validatePasteId = [
 app.post('/api/pastes', createPasteLimit, validatePaste, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
+        console.log('Request body:', req.body);
         return res.status(400).json({ 
             error: 'Validation failed', 
             details: errors.array()

@@ -26,14 +26,19 @@ const DISPLAY_SANITIZE_CONFIG = {
 };
 
 /**
- * Sanitize user input content (strips all HTML)
+ * Sanitize user input content (strips all HTML but preserves JSON-safe text)
  * Use this for sanitizing content before storage or API calls
  * @param {string} content - The content to sanitize
  * @returns {string} - Sanitized content with all HTML stripped
  */
 export const sanitizeInput = (content) => {
     if (typeof content !== 'string') return '';
-    return DOMPurify.sanitize(content, INPUT_SANITIZE_CONFIG);
+    
+    // First, sanitize with DOMPurify to remove dangerous content
+    const sanitized = DOMPurify.sanitize(content, INPUT_SANITIZE_CONFIG);
+    
+    // Return the sanitized content (DOMPurify handles text extraction safely)
+    return sanitized;
 };
 
 /**
@@ -89,14 +94,13 @@ DOMPurify.addHook('beforeSanitizeElements', (node) => {
 
 DOMPurify.addHook('beforeSanitizeAttributes', (node) => {
     // Remove any attributes that start with 'on' (event handlers)
-    if (node.hasAttributes()) {
-        const attrs = node.attributes;
-        for (let i = attrs.length - 1; i >= 0; i--) {
-            const attr = attrs[i];
+    if (node.attributes && node.attributes.length > 0) {
+        const attrs = Array.from(node.attributes);
+        attrs.forEach(attr => {
             if (attr.name.toLowerCase().startsWith('on')) {
                 node.removeAttribute(attr.name);
             }
-        }
+        });
     }
 });
 

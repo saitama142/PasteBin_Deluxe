@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPaste, sanitizeInput } from '../api/pasteApi';
-import { sanitizeInput as sanitizeInputUtil } from '../utils/sanitizer';
+import { createPaste } from '../api/pasteApi';
 // Styles are in App.css, make sure they are loaded
 
 const CreatePaste = () => {
@@ -13,16 +12,77 @@ const CreatePaste = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // For auto-detection (simplified example)
+    // Improved auto-detection with better heuristics
     useEffect(() => {
-        if (content.trim().startsWith('<') && content.trim().endsWith('>')) {
-            setLanguage('xml'); // HTML/XML
-        } else if (content.includes('function(') || content.includes('const ') || content.includes('let ')) {
-            // Basic check for JS, can be improved
-            // setLanguage('javascript');
-        } else if (content.includes('def ') || content.includes('import ')){
-            // Basic check for Python
-            // setLanguage('python');
+        if (content.trim().length < 10) return; // Skip very short content
+        
+        const lines = content.split('\n');
+        const firstLine = lines[0].trim();
+        const allContent = content.toLowerCase();
+        
+        // Python detection
+        if (allContent.includes('def ') || 
+            allContent.includes('import ') || 
+            allContent.includes('from ') ||
+            allContent.includes('print(') ||
+            (firstLine.startsWith('#!') && firstLine.includes('python'))) {
+            setLanguage('python');
+            return;
+        }
+        
+        // JavaScript detection
+        if (allContent.includes('function ') || 
+            allContent.includes('const ') || 
+            allContent.includes('let ') ||
+            allContent.includes('var ') ||
+            allContent.includes('console.log') ||
+            allContent.includes('=>') ||
+            allContent.includes('require(') ||
+            allContent.includes('import ')) {
+            setLanguage('javascript');
+            return;
+        }
+        
+        // HTML detection
+        if ((allContent.includes('<html') || allContent.includes('<!doctype')) ||
+            ((allContent.includes('<div') && allContent.includes('</div>')) ||
+            (allContent.includes('<p>') && allContent.includes('</p>')))) {
+            setLanguage('html');
+            return;
+        }
+        
+        // CSS detection
+        if (allContent.includes('{') && allContent.includes('}') && 
+            (allContent.includes(':') && allContent.includes(';'))) {
+            setLanguage('css');
+            return;
+        }
+        
+        // JSON detection
+        if ((firstLine.startsWith('{') || firstLine.startsWith('[')) &&
+            allContent.includes('"') && allContent.includes(':')) {
+            setLanguage('json');
+            return;
+        }
+        
+        // Bash/Shell detection
+        if (firstLine.startsWith('#!/bin/bash') || 
+            firstLine.startsWith('#!/bin/sh') ||
+            allContent.includes('echo ') ||
+            allContent.includes('sudo ') ||
+            allContent.includes('chmod ')) {
+            setLanguage('bash');
+            return;
+        }
+        
+        // SQL detection
+        if (allContent.includes('select ') || 
+            allContent.includes('insert ') || 
+            allContent.includes('update ') ||
+            allContent.includes('delete ') ||
+            allContent.includes('create table')) {
+            setLanguage('sql');
+            return;
         }
     }, [content]);
 
@@ -32,15 +92,12 @@ const CreatePaste = () => {
         setError('');
 
         try {
-            // Additional client-side sanitization before sending to API
-            const clientSanitized = sanitizeInputUtil(content);
-            const sanitizedContent = sanitizeInput(clientSanitized);
-            
-            if (!sanitizedContent) {
+            // Basic validation
+            if (!content.trim()) {
                 throw new Error('Paste content cannot be empty.');
             }
 
-            const data = await createPaste(sanitizedContent, language, password, expiration);
+            const data = await createPaste(content, language, password, expiration);
             
             // Store delete token in localStorage for user's convenience
             if (data.deleteToken) {

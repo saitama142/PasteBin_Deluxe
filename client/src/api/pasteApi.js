@@ -1,5 +1,5 @@
 // API Configuration and Security
-import { sanitizeInput as sanitizeInputUtil, sanitizeForDisplay as sanitizeForDisplayUtil } from '../utils/sanitizer';
+import { sanitizeForDisplay as sanitizeForDisplayUtil } from '../utils/sanitizer';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 const MAX_CONTENT_LENGTH = 1048576; // 1MB
@@ -13,13 +13,11 @@ const getSecureHeaders = () => ({
     'Pragma': 'no-cache'
 });
 
-// Input sanitization with centralized utility
+// Input sanitization for length and basic validation only
 export const sanitizeInput = (input) => {
     if (typeof input !== 'string') return '';
-    // First trim and limit length
-    const trimmed = input.trim().substring(0, MAX_CONTENT_LENGTH);
-    // Then sanitize with centralized utility
-    return sanitizeInputUtil(trimmed);
+    // Only trim and limit length - no HTML sanitization to avoid JSON corruption
+    return input.trim().substring(0, MAX_CONTENT_LENGTH);
 };
 
 // Sanitize content for display (allows safe HTML for syntax highlighting)
@@ -51,7 +49,16 @@ const apiRequest = async (url, options = {}) => {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (parseError) {
+                // If JSON parsing fails, get the raw text
+                const rawText = await response.text();
+                console.error('Server response (non-JSON):', rawText);
+                throw new Error(`HTTP ${response.status}: ${rawText || 'Unknown error'}`);
+            }
+            console.error('Server error response:', errorData);
             throw new Error(errorData.error || `HTTP ${response.status}`);
         }
 
@@ -77,14 +84,19 @@ export const createPaste = async (content, language, password, expiration) => {
         throw new Error('Content too large (max 1MB)');
     }
 
+    const requestBody = {
+        content: sanitizedContent,
+        language: language || 'plaintext',
+        password: password || null,
+        expiration: expiration === 'never' ? null : expiration
+    };
+
+    // Debug logging
+    console.log('Creating paste with:', requestBody);
+
     return await apiRequest('/api/pastes', {
         method: 'POST',
-        body: JSON.stringify({
-            content: sanitizedContent,
-            language: language || 'plaintext',
-            password: password || null,
-            expiration: expiration === 'never' ? null : expiration
-        })
+        body: JSON.stringify(requestBody)
     });
 };
 
