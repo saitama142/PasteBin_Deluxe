@@ -14,7 +14,6 @@
 
 **Perfect for self-hosting and sharing code snippets, text, or any content with enterprise-level security and a beautiful user interface.**
 
-[🌟 Live Demo](#) • [📖 Documentation](#) • [💬 Issues](https://github.com/saitama142/PasteBin_Deluxe/issues)
 
 </div>
 
