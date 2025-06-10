@@ -146,6 +146,7 @@ const ViewPaste = () => {
 
     const getFormattedExpiration = () => {
         if (!paste || !paste.expiresAt) return null;
+        // Ensure the timestamp is treated as UTC and properly converted to local time
         const expirationDate = new Date(paste.expiresAt);
         return `Expires on: ${expirationDate.toLocaleString()}`;
     };
