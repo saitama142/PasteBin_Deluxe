@@ -144,13 +144,6 @@ ALLOWED_ORIGINS=https://yourdomain.com
    docker-compose -f docker-compose.prod.yml up -d
    ```
 
-### Using Coolify or Similar Platforms
-
-1. **Create new project** in your deployment platform
-2. **Connect repository**: https://github.com/saitama142/PasteBin_Deluxe
-3. **Set environment variables** as listed above
-4. **Deploy** using Docker Compose configuration
-
 ## Security
 
 ### Built-in Security Features
