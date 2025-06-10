@@ -138,14 +138,13 @@ curl http://localhost:3001/api/pastes/PASTE_ID
 
 ## 📄 License
 
-This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0**.
 
 ---
 
 ## 💬 Support
 
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/saitama142/PasteBin_Deluxe/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/saitama142/PasteBin_Deluxe/discussions)
 
 ---
 
