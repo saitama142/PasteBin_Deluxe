@@ -18,9 +18,8 @@ RUN npm run build
 # Production stage with nginx
 FROM nginx:alpine AS production
 
-# Security: Remove default nginx user and create custom one
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S nginx -u 1001 -G nginx
+# Security: Use existing nginx user from base image
+# The nginx:alpine image already has nginx user and group
 
 # Copy built app from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
