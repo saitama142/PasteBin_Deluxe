@@ -9,8 +9,12 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy source code (exclude node_modules via .dockerignore)
 COPY . .
+
+# Debug: List copied files
+RUN echo "Files copied to container:" && find . -type f -name "*.html" || echo "No HTML files found"
+RUN echo "Public directory contents:" && ls -la public/ || echo "Public directory not found"
 
 # Build the application
 RUN npm run build

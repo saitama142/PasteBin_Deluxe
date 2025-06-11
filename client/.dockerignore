@@ -11,3 +11,5 @@ README.md
 coverage
 .DS_Store
 *.log
+build
+.cache
