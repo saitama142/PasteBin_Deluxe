@@ -1,4 +1,4 @@
-// API Configuration and Security
+// API Configuration and Security - Production Build v2
 import { sanitizeForDisplay as sanitizeForDisplayUtil } from '../utils/sanitizer';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
