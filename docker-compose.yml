@@ -17,6 +17,8 @@ services:
       - MAX_PASTES_PER_IP=${MAX_PASTES_PER_IP:-10}
       - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-15}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
     volumes:
       - pastebin_data:/app/data
       - backend_logs:/var/log
