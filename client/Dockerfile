@@ -3,6 +3,9 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Accept build argument for API URL
+ARG REACT_APP_API_URL=/api
+
 # Copy package files
 COPY package*.json ./
 
@@ -11,6 +14,12 @@ RUN npm ci
 
 # Copy source code (exclude node_modules via .dockerignore)
 COPY . .
+
+# Set environment variable from build arg
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+# Debug: Show environment variables
+RUN echo "Build environment: REACT_APP_API_URL=$REACT_APP_API_URL"
 
 # Debug: List copied files
 RUN echo "Files copied to container:" && find . -type f -name "*.html" || echo "No HTML files found"
