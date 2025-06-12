@@ -51,12 +51,17 @@ const apiRequest = async (url, options = {}) => {
         if (!response.ok) {
             let errorData;
             try {
-                errorData = await response.json();
-            } catch (parseError) {
-                // If JSON parsing fails, get the raw text
-                const rawText = await response.text();
-                console.error('Server response (non-JSON):', rawText);
-                throw new Error(`HTTP ${response.status}: ${rawText || 'Unknown error'}`);
+                const responseText = await response.text();
+                try {
+                    errorData = JSON.parse(responseText);
+                } catch (parseError) {
+                    // If JSON parsing fails, use the raw text
+                    console.error('Server response (non-JSON):', responseText);
+                    throw new Error(`HTTP ${response.status}: ${responseText || 'Unknown error'}`);
+                }
+            } catch (textError) {
+                console.error('Failed to read response:', textError);
+                throw new Error(`HTTP ${response.status}: Unable to read response`);
             }
             console.error('Server error response:', errorData);
             throw new Error(errorData.error || `HTTP ${response.status}`);
