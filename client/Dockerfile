@@ -25,6 +25,11 @@ RUN addgroup -g 1001 -S nginx && \
 # Copy built app from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
 
+# Inject Umami analytics if configured
+RUN if [ -n "$UMAMI_URL" ] && [ -n "$UMAMI_WEBSITE_ID" ]; then \
+    sed -i '/<head>/a \ \ <script defer src="'"$UMAMI_URL"'" data-website-id="'"$UMAMI_WEBSITE_ID"'"></script>' /usr/share/nginx/html/index.html; \
+fi
+
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 

@@ -16,6 +16,10 @@ cp .env.production .env
 # Edit with your domain (optional for local testing)
 nano .env
 
+# Optional: Add Umami analytics tracking
+# UMAMI_URL="http://your-umami-instance/script.js"
+# UMAMI_WEBSITE_ID="your-website-uuid"
+
 # Deploy with Docker
 docker-compose -f docker-compose.prod.yml up -d
 ```
