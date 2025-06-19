@@ -14,13 +14,16 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Trust proxy for proper IP detection behind reverse proxy
+app.set('trust proxy', true);
+
 // Security Middleware
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-            scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com", "http://100.97.234.68:3013"],
             imgSrc: ["'self'", "data:", "https:"],
             connectSrc: ["'self'"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
