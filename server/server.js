@@ -14,8 +14,8 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Trust proxy for proper IP detection behind reverse proxy
-app.set('trust proxy', true);
+// Trust proxy with specific configuration for security
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal', '100.118.131.31']);
 
 // Security Middleware
 app.use(helmet({
