@@ -4,11 +4,19 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# Accept build argument for API URL
+# Accept build arguments for API URL and Umami
 ARG REACT_APP_API_URL
+ARG UMAMI_URL
+ARG UMAMI_WEBSITE_ID
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
+# Build the React app
 RUN npm run build
+
+# Inject Umami script if environment variables are provided
+RUN if [ -n "$UMAMI_URL" ] && [ -n "$UMAMI_WEBSITE_ID" ]; then \
+    sed -i "s|</head>|<script defer src=\"$UMAMI_URL\" data-website-id=\"$UMAMI_WEBSITE_ID\"></script></head>|" build/index.html; \
+    fi
 
 FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html

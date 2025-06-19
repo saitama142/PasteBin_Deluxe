@@ -48,6 +48,8 @@ services:
       dockerfile: Dockerfile
       args:
         REACT_APP_API_URL: https://api.pastebin.bruhphoria.xyz
+        UMAMI_URL: ${UMAMI_URL}
+        UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID}
     container_name: pastebin-frontend
     restart: unless-stopped
     ports:
