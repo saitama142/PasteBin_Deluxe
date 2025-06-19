@@ -16,7 +16,7 @@ services:
       - MAX_PASTE_SIZE=${MAX_PASTE_SIZE:-1048576}
       - MAX_PASTES_PER_IP=${MAX_PASTES_PER_IP:-10}
       - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-15}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
+      - ALLOWED_ORIGINS=https://pastebin.bruhphoria.xyz
     volumes:
       - pastebin_data:/app/data
       - backend_logs:/var/log
@@ -44,6 +44,8 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: https://api.pastebin.bruhphoria.xyz
     container_name: pastebin-frontend
     restart: unless-stopped
     ports:
