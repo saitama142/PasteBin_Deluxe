@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Trust proxy with specific configuration for security
-app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal', '100.118.131.31']);
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 
 // Security Middleware
 app.use(helmet({

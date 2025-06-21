@@ -18,7 +18,7 @@ services:
       - MAX_PASTE_SIZE=${MAX_PASTE_SIZE:-1048576}
       - MAX_PASTES_PER_IP=${MAX_PASTES_PER_IP:-10}
       - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-15}
-      - ALLOWED_ORIGINS=https://pastebin.bruhphoria.xyz
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
     volumes:
       - pastebin_data:/app/data
       - backend_logs:/var/log
@@ -47,7 +47,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: https://api.pastebin.bruhphoria.xyz
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:3001}
         UMAMI_URL: ${UMAMI_URL}
         UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID}
     container_name: pastebin-frontend
