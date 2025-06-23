@@ -14,6 +14,8 @@
 
 **Perfect for self-hosting and sharing code snippets, text, or any content with enterprise-level security and a beautiful user interface.**
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Try_It_Now-blue?style=for-the-badge&logo=vercel)](https://pastebin.bruhphoria.xyz/)
+
 
 </div>
 
