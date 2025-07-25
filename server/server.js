@@ -120,9 +120,9 @@ const sanitizeUserAgent = (userAgent) => {
 
 const isValidLanguage = (language) => {
     const validLanguages = [
-        'plaintext', 'javascript', 'python', 'java', 'csharp', 'php', 'ruby', 
-        'go', 'swift', 'kotlin', 'rust', 'sql', 'html', 'css', 'xml', 'json', 
-        'markdown', 'bash', 'typescript', 'cpp', 'c'
+        'plaintext', 'javascript', 'typescript', 'python', 'java', 'c', 'cpp', 
+        'csharp', 'php', 'ruby', 'go', 'swift', 'kotlin', 'rust', 'sql', 'html', 
+        'css', 'xml', 'json', 'markdown', 'bash'
     ];
     return validLanguages.includes(language);
 };
@@ -154,7 +154,7 @@ const validatePaste = [
     body('expiration')
         .optional({ nullable: true })
         .custom(value => {
-            if (value !== null && !['1hour', '1day', '1week'].includes(value)) {
+            if (value !== null && !['10min', '1hour', '1day', '1week', '1month'].includes(value)) {
                 throw new Error('Invalid expiration time');
             }
             return true;
@@ -195,9 +195,11 @@ app.post('/api/pastes', createPasteLimit, validatePaste, async (req, res) => {
 
     if (expiration) {
         switch (expiration) {
+            case '10min': expiresAt = createdAt + 10 * 60 * 1000; break;
             case '1hour': expiresAt = createdAt + 60 * 60 * 1000; break;
             case '1day': expiresAt = createdAt + 24 * 60 * 60 * 1000; break;
             case '1week': expiresAt = createdAt + 7 * 24 * 60 * 60 * 1000; break;
+            case '1month': expiresAt = createdAt + 30 * 24 * 60 * 60 * 1000; break;
         }
     }
 
