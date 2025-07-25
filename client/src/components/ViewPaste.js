@@ -88,24 +88,6 @@ const ViewPaste = () => {
         }
     }, [theme, paste]);
 
-    useEffect(() => {
-        if (paste && paste.content && codeRef.current) {
-            const lang = paste.language && hljs.getLanguage(paste.language) ? paste.language : 'plaintext';
-            // Sanitize content before highlighting
-            const sanitizedContent = sanitizePlainText(paste.content);
-            // Check if hljs supports the language
-            if (hljs.getLanguage(lang)) {
-                const highlighted = hljs.highlight(sanitizedContent, { language: lang }).value;
-                // Sanitize the highlighted HTML before setting innerHTML
-                codeRef.current.innerHTML = sanitizeForDisplay(highlighted);
-            } else {
-                // If language is not supported, use plaintext and show a fallback indication
-                const highlighted = hljs.highlight(sanitizedContent, { language: 'plaintext' }).value;
-                codeRef.current.innerHTML = sanitizeForDisplay(highlighted);
-            }
-        }
-    }, [paste]);
-
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
